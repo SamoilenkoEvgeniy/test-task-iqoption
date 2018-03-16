@@ -12,6 +12,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 class ChangeOperationStatus implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    private $operation;
     private $config;
 
     /**
@@ -22,6 +24,7 @@ class ChangeOperationStatus implements ShouldQueue
     public function __construct($config)
     {
         $this->config = $config;
+        $this->operation = Operation::find($this->config['operation_id']);
     }
 
     /**
@@ -31,8 +34,7 @@ class ChangeOperationStatus implements ShouldQueue
      */
     public function handle()
     {
-        $operation = Operation::find($this->config['operation_id']);
-        $this->$this->config['action']($operation);
+        $this->$this->config['action']($this->operation);
     }
 
     public function unHoldAccept($operation)

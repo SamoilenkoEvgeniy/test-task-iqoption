@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Operation;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SiteController extends Controller
@@ -14,7 +15,7 @@ class SiteController extends Controller
 
     public function stats()
     {
-        $users = \App\Models\User::all();
+        $users = User::all();
         return response()->view('stats', compact('users'));
     }
 
@@ -29,7 +30,7 @@ class SiteController extends Controller
 
     public function addUser()
     {
-        $user = new \App\Models\User([
+        $user = new User([
             'external_id' => 1,
             'balance' => 1
         ]);
@@ -50,6 +51,15 @@ class SiteController extends Controller
             'success' => true,
             'operations' => Operation::whereUserId($user_id)->get()
         ]);
+    }
+
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function tasks()
+    {
+        $users = User::all();
+        return response()->view('tasks', compact('users'));
     }
 
 }

@@ -30,4 +30,27 @@ $(document).ready(function () {
         });
     });
 
+    $('.send').click(function(e) {
+
+        e.preventDefault();
+
+        var that = $(this),
+            form = that.parents("form").first();
+
+
+        $.ajax({
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function (response) {
+                console.log('success');
+            },
+            error: function() {
+                console.log('error');
+            }
+        });
+
+
+        return false;
+    });
+
 });

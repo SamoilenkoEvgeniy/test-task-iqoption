@@ -7,9 +7,7 @@ Route::get('/', 'SiteController@index');
 Route::get('/addUser', 'SiteController@addUser');
 Route::get('/data/operations/load', 'SiteController@getOperations');
 
-Route::get('/createTask', function (\Illuminate\Http\Request $request) {
-
-});
+Route::get('/tasks', 'SiteController@tasks');
 
 Route::group(['prefix' => 'task'], function () {
     Route::get('/changeBalance', 'TaskController@changeBalance');

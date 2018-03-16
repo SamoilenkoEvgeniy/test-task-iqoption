@@ -27,14 +27,14 @@
             <li class="nav-item {{ \Request::path() === 'stats' ? 'active' : '' }}">
                 <a class="nav-link" href="{{url('/stats')}}">Statistics</a>
             </li>
-            <li class="nav-item {{ \Request::path() === 'addTask' ? 'active' : '' }}">
-                <a class="nav-link" href="{{url('/addTask')}}">Add task</a>
+            <li class="nav-item {{ \Request::path() === 'tasks' ? 'active' : '' }}">
+                <a class="nav-link" href="{{url('/tasks')}}">Tasks</a>
             </li>
         </ul>
     </div>
 </nav>
 <div class="container">
-    <div class="row">
+    <div class="row" style="margin-top: 12px;">
         @yield('content')
     </div>
 </div>
