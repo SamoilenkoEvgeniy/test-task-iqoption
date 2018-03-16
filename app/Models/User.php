@@ -14,8 +14,18 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'balance',
+        'balance_hold',
         'external_id'
     ];
+
+    /**
+     * @param int $cost
+     * @return bool
+     */
+    public function canDoOperation($cost = 0)
+    {
+        return ($this->balance - abs($cost)) >= 0;
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

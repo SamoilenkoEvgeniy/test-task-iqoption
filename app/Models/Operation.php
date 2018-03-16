@@ -32,7 +32,13 @@ class Operation extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public static function getHoldSum($user_id)
+    {
+        return self::whereUserId($user_id)->whereOperationStatus('hold')->where('operation_costs', '<',
+            0)->sum('operation_costs');
     }
 
 }

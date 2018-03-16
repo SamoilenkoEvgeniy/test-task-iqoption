@@ -17,6 +17,8 @@ class ChangeBalance implements ShouldQueue
 
     protected $user;
     protected $config;
+    protected $operationStatus;
+    protected $isHold;
 
     /**
      * Create a new job instance.
@@ -27,27 +29,42 @@ class ChangeBalance implements ShouldQueue
     {
         $this->config = $config;
         $this->user = User::find($this->config['user_id']);
+        $this->isHold = array_key_exists('isHold', $this->config) ? $this->config['isHold'] : false;
+        $this->operationStatus = $this->isHold ? 'hold' : 'accepted';
     }
 
     /**
      * Execute the job.
-     *
+     * @todo add test for this
      * @return void
      */
     public function handle()
     {
-        $isHold = array_key_exists('isHold', $this->config) ? $this->config['isHold'] : false;
         $operation = new Operation([
             'user_id' => $this->config['user_id'],
             'operation_costs' => $this->config['amount'],
         ]);
 
-        \DB::transaction(function () use ($operation, $isHold) {
+        \DB::transaction(function () use ($operation) {
             try {
-                $this->user->balance = $this->user->balance + $this->config['amount'];
+                if ($this->isHold) {
+                    if ($this->config['amount'] < 0 && $this->user->canDoOperation($this->config['amount'])) {
+                        $this->user->balance = $this->user->balance + $this->config['amount'];
+                    } elseif ($this->config['amount'] < 0) {
+                        $this->operationStatus = 'refused';
+                    }
+                } else {
+                    if (
+                        ($this->config['amount'] < 0 && $this->user->canDoOperation($this->config['amount'])) ||
+                        ($this->config['amount'] > 0)
+                    ) {
+                        $this->user->balance = $this->user->balance + $this->config['amount'];
+                    } else {
+                        $this->operationStatus = 'refused';
+                    }
+                }
                 $this->user->save();
-                $operationStatus = $isHold ? 'hold' : 'accepted';
-                $operation->setStatus($operationStatus);
+                $operation->setStatus($this->operationStatus);
             } catch (\Exception $e) {
                 $operation->setStatus('refused');
                 log::error($e->getMessage());

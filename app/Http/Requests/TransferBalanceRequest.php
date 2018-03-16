@@ -26,7 +26,7 @@ class TransferBalanceRequest extends FormRequest
         return [
             'from' => 'required|integer',
             'to' => 'required|integer',
-            'amount' => 'required|integer',
+            'amount' => 'required|integer|min:1',
         ];
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Log;
 
 class ChangeOperationStatus implements ShouldQueue
 {
@@ -15,6 +16,7 @@ class ChangeOperationStatus implements ShouldQueue
 
     private $operation;
     private $config;
+    private $user;
 
     /**
      * Create a new job instance.
@@ -25,6 +27,7 @@ class ChangeOperationStatus implements ShouldQueue
     {
         $this->config = $config;
         $this->operation = Operation::find($this->config['operation_id']);
+        $this->user = $this->operation->user;
     }
 
     /**
@@ -34,33 +37,34 @@ class ChangeOperationStatus implements ShouldQueue
      */
     public function handle()
     {
-        $this->$this->config['action']($this->operation);
+        \DB::transaction(function () {
+            try {
+                $method = $this->config['action'];
+                $this->$method($this->operation);
+            } catch (\Exception $e) {
+                log::error($e->getMessage());
+            }
+        });
     }
 
     public function unHoldAccept($operation)
     {
+        if ($operation->operation_costs > 0) {
+            $this->user->balance += $operation->operation_costs;
+            $this->user->save();
+        }
         $operation->setStatus('accepted');
         $operation->save();
     }
 
     public function unHoldRefuse($operation)
     {
-        $user = $operation->user;
-        $user->balance = $user->balance + $operation->operation_cost;
-        $user->save();
+        if ($operation->operation_costs < 0) {
+            $this->user->balance += +($operation->operation_costs * -1);
+            $this->user->save();
+        }
         $operation->setStatus('refused');
         $operation->save();
     }
 
-    /**
-     * @param $operation
-     */
-    public function refuse($operation)
-    {
-        $user = $operation->user;
-        $user->balance = $user->balance - $operation->operation_cost;
-        $user->save();
-        $operation->setStatus('refused');
-        $operation->save();
-    }
 }
