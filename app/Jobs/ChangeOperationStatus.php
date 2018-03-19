@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Operation;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -27,7 +28,6 @@ class ChangeOperationStatus implements ShouldQueue
     {
         $this->config = $config;
         $this->operation = Operation::find($this->config['operation_id']);
-        $this->user = $this->operation->user;
     }
 
     /**
@@ -39,6 +39,7 @@ class ChangeOperationStatus implements ShouldQueue
     {
         \DB::transaction(function () {
             try {
+                $this->user = User::where('id', $this->config['user_id'])->lockForUpdate()->first();
                 $method = $this->config['action'];
                 $this->$method($this->operation);
             } catch (\Exception $e) {

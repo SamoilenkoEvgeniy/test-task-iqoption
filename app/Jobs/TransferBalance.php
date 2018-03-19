@@ -25,10 +25,8 @@ class TransferBalance implements ShouldQueue
      */
     public function __construct($config)
     {
-        log::error('here');
         $this->config = $config;
-        $this->user_from = User::find($this->config['from']);
-        $this->user_to = User::find($this->config['to']);
+
 
     }
 
@@ -46,6 +44,8 @@ class TransferBalance implements ShouldQueue
 
         \DB::transaction(function () use ($operation_from) {
             try {
+                $this->user_from = User::where('id', $this->config['from'])->lockForUpdate()->first();
+                $this->user_to = User::where('id', $this->config['to'])->lockForUpdate()->first();
                 $this->user_from->balance -= $this->config['amount'];
                 $this->user_to->balance += $this->config['amount'];
                 $this->user_from->save();
