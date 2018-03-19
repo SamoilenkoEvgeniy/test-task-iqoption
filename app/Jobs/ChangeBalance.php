@@ -28,7 +28,6 @@ class ChangeBalance implements ShouldQueue
     public function __construct($config)
     {
         $this->config = $config;
-        $this->user = User::find($this->config['user_id']);
         $this->isHold = array_key_exists('isHold', $this->config) ? $this->config['isHold'] : false;
         $this->operationStatus = $this->isHold ? 'hold' : 'accepted';
     }
@@ -47,6 +46,8 @@ class ChangeBalance implements ShouldQueue
 
         \DB::transaction(function () use ($operation) {
             try {
+
+                $this->user = User::where('id', $this->config['user_id'])->lockForUpdate()->first();
                 if ($this->isHold) {
                     if ($this->config['amount'] < 0 && $this->user->canDoOperation($this->config['amount'])) {
                         $this->user->balance = $this->user->balance + $this->config['amount'];

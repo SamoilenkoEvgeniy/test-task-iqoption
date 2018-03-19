@@ -31,7 +31,7 @@ class SiteController extends Controller
     public function addUser()
     {
         $user = new User([
-            'external_id' => 2,
+            'external_id' => rand(10, 100),
             'balance' => 1
         ]);
         $user->save();

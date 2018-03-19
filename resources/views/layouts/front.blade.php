@@ -30,6 +30,9 @@
             <li class="nav-item {{ \Request::path() === 'tasks' ? 'active' : '' }}">
                 <a class="nav-link" href="{{url('/tasks')}}">Tasks</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{url('/addUser')}}">Add User</a>
+            </li>
         </ul>
     </div>
 </nav>
