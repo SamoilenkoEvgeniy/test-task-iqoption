@@ -31,6 +31,12 @@ demo: [test.pidanova.ru](http://test.pidanova.ru)
 ### Эндпоинты для запуска тасков:
 #### get
 
-* /tast/changeBalance
-* /task/changeOperationStatus 
-* /task/transferBalance
+* /task/changeBalance?user_id=[integer]&amount=[integer]&isHold=[string|boolean|integer]
+Метод принимает user_Id, и amount. на amount увеличится или уменьшится баланс пользователя.
+Также вариативно принимает isHold как отметка о холде операции, которую потом можно подтвердить или отменить.
+
+* /task/changeOperationStatus?operation_id=[integer]&action=[string:unHoldAccept|unHoldRefuse]
+Метод для подтверждения или отмены холда.
+
+* /task/transferBalance?from=[integer]&to=[integer]&amount=[integer]
+Перевод от одного пользователя к другому пользователю.
