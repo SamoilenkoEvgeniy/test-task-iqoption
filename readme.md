@@ -1,7 +1,5 @@
 ## Тестовое задание IQ option
 
-demo: [test.pidanova.ru](http://test.pidanova.ru)
-
 ### Используемые технологии
 
 * php (laravel)
