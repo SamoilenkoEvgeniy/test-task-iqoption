@@ -1,0 +1,54 @@
+    version: '2'
+    services:
+        web:
+            build:
+                context: ./docker/
+                dockerfile: web.docker
+            volumes:
+                - ./:/var/www
+            ports:
+                - "8080:80"
+            environment:
+                - NGINX_HOST=iq.test
+                - NGINX_PORT=80
+            links:
+                - app
+        web2:
+            build:
+                context: ./docker/
+                dockerfile: web.docker
+            volumes:
+                - ./:/var/www
+            ports:
+                - "8081:80"
+            environment:
+                - NGINX_HOST=iq.test
+                - NGINX_PORT=80
+            links:
+                - app
+        app:
+            build:
+                context: ./docker/
+                dockerfile: app.docker
+            environment:
+                - "DB_PORT=3306"
+                - "DB_HOST=mysql"
+            volumes:
+                - ./:/var/www
+            links:
+                - redis
+                - mysql
+        mysql:
+            image: mysql:latest
+            environment:
+                - "MYSQL_ROOT_PASSWORD=secret"
+                - "MYSQL_DATABASE=iq"
+            ports:
+                - "3306:3306"
+        redis:
+            image: redis:latest
+            ports:
+                - "6379:6379"
+            environment:
+                - REDIS_PORT=6379
+                - REDIS_PASSWORD=secret

@@ -9,7 +9,7 @@
 
 ### Способ развертки приложения:
 
-Чтобы приложениер работало корректно на сервере необходимо иметь:
+Чтобы приложение работало корректно на сервере необходимо иметь:
 1. php >= 7.0
 2. MySQL = 5.7
 2. redis current stable version
@@ -25,6 +25,15 @@
 8. sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start laravel-worker:*
 
 Готово! 
+
+## Docker way
+
+1. Клонируем репозиторий
+2. docker-compose up -d
+3. подключаемся к контейнеру app
+4. composer install
+5. php artisan migrate
+6. php artisan queue:work
 
 ### Эндпоинты для запуска тасков:
 #### get
